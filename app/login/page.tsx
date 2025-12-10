@@ -91,6 +91,8 @@ export default function LoginPage() {
         email: loginForm.email,
         password: loginForm.password,
       });
+      // Client-side log (visible in browser devtools console)
+      console.log(`[LOGIN] Attempted login. email: ${loginForm.email}, error: ${error?.message ?? "none"}`);
       setLoading(false);
       if (error) {
         setNotice(error.message);
@@ -109,6 +111,10 @@ export default function LoginPage() {
           emailRedirectTo: undefined,
         },
       });
+      // Client-side log (visible in browser devtools console)
+      console.log(
+        `[SIGNUP] Attempted signup. email: ${registerForm.email}, error: ${error?.message ?? "none"}, user: ${data?.user?.id ?? "none"}, confirmed_at: ${data?.user?.confirmed_at ?? "none"}`
+      );
       setLoading(false);
       if (error) {
         setNotice(error.message);
@@ -116,6 +122,7 @@ export default function LoginPage() {
       }
       if (data?.user && !data.user.confirmed_at) {
         setNotice("Registration successful. Please check your email to confirm your account.");
+        console.log(`[SIGNUP] Registration successful but not confirmed. user: ${data.user.id}`);
       } else {
         setNotice("Registration successful.");
       }

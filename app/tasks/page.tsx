@@ -84,6 +84,7 @@ export default function TasksPage() {
       if (!mounted) return;
       const uid = data.user?.id ?? null;
       setSessionUserId(uid);
+      console.log(`[TASKS PAGE] useEffect supabase.auth.getUser(). uid: ${uid ?? "none"}`);
       if (uid) {
         bootstrap(uid).catch(() => {
           // ignore
@@ -93,6 +94,7 @@ export default function TasksPage() {
     const { data: sub } = supabase.auth.onAuthStateChange(async (_event, sess) => {
       const uid = sess?.user?.id ?? null;
       setSessionUserId(uid);
+      console.log(`[TASKS PAGE] onAuthStateChange. event: ${_event}, uid: ${uid ?? "none"}`);
       if (uid) {
         await bootstrap(uid);
       } else {
@@ -129,6 +131,7 @@ export default function TasksPage() {
   }, [sessionUserId, supabase]);
 
   async function bootstrap(uid: string) {
+    console.log(`[TASKS PAGE] bootstrap called. uid: ${uid}`);
     await Promise.all([fetchMyProfile(uid), fetchPeople(), fetchTasks(uid)]);
   }
 
@@ -150,6 +153,7 @@ export default function TasksPage() {
       .order("created_at", { ascending: false });
 
     const { data: shareRows } = await supabase.from("task_shares").select("task_id").eq("user_id", uid);
+    console.log(`[TASKS PAGE] fetchTasks. uid: ${uid}, shareRows: ${JSON.stringify(shareRows)}`);
     const sharedIds = new Set<string>((shareRows ?? []).map((r) => r.task_id));
     setSharedTaskIds(sharedIds);
 
@@ -574,7 +578,7 @@ export default function TasksPage() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => deleteTask(confirmDeleteId)}
+                  onClick={() => deleteTask(confirmDeleteId!)}
                   className="rounded-xl px-4 py-2 text-sm bg-rose-500/80 text-white font-medium shadow hover:bg-rose-500 transition"
                 >
                   Delete
@@ -632,7 +636,7 @@ export default function TasksPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium">Timezone (IANA)</label>
+                  <label className="block text sm font-medium">Timezone (IANA)</label>
                   <input
                     type="text"
                     value={nudgeTZ}
@@ -640,7 +644,7 @@ export default function TasksPage() {
                     placeholder="e.g., America/New_York"
                     className="mt-2 w-full rounded-xl bg-white/5 px-4 py-2 outline-none ring-1 ring-white/10 focus:ring-white/30 placeholder:text-white/40"
                   />
-                  <p className="text-xs text-white/60 mt-1">We’ll schedule using this timezone.</p>
+                  <p className="text-xs text-white/60 mt-1">We'll schedule using this timezone.</p>
                 </div>
               </div>
 

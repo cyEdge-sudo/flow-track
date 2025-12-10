@@ -30,6 +30,8 @@ export async function updateSession(request: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser()
+  // eslint-disable-next-line no-console
+  console.log(`[MIDDLEWARE] supabase.auth.getUser() called. user: ${user?.id ?? 'none'}`)
 
   const pathname = request.nextUrl.pathname
 
@@ -49,6 +51,8 @@ export async function updateSession(request: NextRequest) {
     cookiesToCopy.forEach(({ name, value }) => {
       resp.cookies.set(name, value)
     })
+    // eslint-disable-next-line no-console
+    console.log(`[MIDDLEWARE] Redirecting to /login. pathname: ${pathname}, user: ${user?.id ?? 'none'}`)
 
     return resp
   }
@@ -63,6 +67,8 @@ export async function updateSession(request: NextRequest) {
     cookiesToCopy.forEach(({ name, value }) => {
       resp.cookies.set(name, value)
     })
+    // eslint-disable-next-line no-console
+    console.log(`[MIDDLEWARE] Redirecting to /tasks. pathname: ${pathname}, user: ${user?.id ?? 'none'}`)
 
     return resp
   }

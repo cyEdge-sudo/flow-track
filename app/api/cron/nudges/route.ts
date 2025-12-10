@@ -114,6 +114,8 @@ export async function GET(request: NextRequest) {
               scheduled_at: scheduledISO,
               status: "scheduled",
             } satisfies Database["public"]["Tables"]["nudges"]["Insert"]);
+            // eslint-disable-next-line no-console
+            console.log(`[NUDGES CRON] Created scheduled nudge for user ${p.id} at ${scheduledISO}`);
           }
         })()
       );
@@ -190,6 +192,8 @@ export async function GET(request: NextRequest) {
     `;
 
     if (email) {
+      // eslint-disable-next-line no-console
+      console.log(`[NUDGES CRON] Sending nudge ${nudge.id} to user ${userId} (${email}) scheduled_at ${nudge.scheduled_at}`);
       const res = await sendEmail({
         to: email,
         subject: "Your FlowTrack nudge",
@@ -202,11 +206,17 @@ export async function GET(request: NextRequest) {
           .update({ sent_at: new Date().toISOString(), status: "sent", payload })
           .eq("id", nudge.id);
         sentCount += 1;
+        // eslint-disable-next-line no-console
+        console.log(`[NUDGES CRON] Marked nudge ${nudge.id} as sent.`);
       } else {
         await supabase.from("nudges").update({ status: "failed" }).eq("id", nudge.id);
+        // eslint-disable-next-line no-console
+        console.log(`[NUDGES CRON] Failed to send nudge ${nudge.id}.`);
       }
     } else {
       await supabase.from("nudges").update({ status: "failed" }).eq("id", nudge.id);
+      // eslint-disable-next-line no-console
+      console.log(`[NUDGES CRON] No email for user ${userId}. Marked nudge ${nudge.id} as failed.`);
     }
   }
 
