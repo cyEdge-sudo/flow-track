@@ -43,8 +43,13 @@ export async function updateSession(request: NextRequest) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     const resp = NextResponse.redirect(url)
-    // copy cookies
-    resp.cookies.setAll(supabaseResponse.cookies.getAll())
+
+    // Copy Supabase cookies to the redirect response (ResponseCookies has no setAll)
+    const cookiesToCopy = supabaseResponse.cookies.getAll() as Array<{ name: string; value: string }>
+    cookiesToCopy.forEach(({ name, value }) => {
+      resp.cookies.set(name, value)
+    })
+
     return resp
   }
 
@@ -53,7 +58,12 @@ export async function updateSession(request: NextRequest) {
     const url = request.nextUrl.clone()
     url.pathname = '/tasks'
     const resp = NextResponse.redirect(url)
-    resp.cookies.setAll(supabaseResponse.cookies.getAll())
+
+    const cookiesToCopy = supabaseResponse.cookies.getAll() as Array<{ name: string; value: string }>
+    cookiesToCopy.forEach(({ name, value }) => {
+      resp.cookies.set(name, value)
+    })
+
     return resp
   }
 
